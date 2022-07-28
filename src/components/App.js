@@ -7,9 +7,9 @@ import TimeboxList from './TimeboxList'
 function App() {
   return (
     <div className="App" id="app">
+      <RealTimeClock />
       <TimeboxList />
       <EditableTimebox />
-      <RealTimeClock />
     </div>
   )
 }
