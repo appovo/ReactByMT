@@ -2,17 +2,17 @@ import React from 'react'
 
 import EditableTimebox from './EditableTimebox'
 import TimeboxList from './TimeboxList'
-import Error from './Error'
+import ErrorBoundary from './ErrorBoundary'
 
 function App() {
   return (
     <div className="App" id="app">
-      <Error message="Coś nie działa w całej appce :(">
+      <ErrorBoundary message="Coś nie działa w całej appce :(">
         <TimeboxList />
-        <Error message="Coś nie działa w EditableTimebox :(">
+        <ErrorBoundary message="Coś nie działa w EditableTimebox :(">
           <EditableTimebox />
-        </Error>
-      </Error>
+        </ErrorBoundary>
+      </ErrorBoundary>
     </div>
   )
 }

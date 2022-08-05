@@ -1,6 +1,7 @@
 import React from 'react'
+import ReactPropTypes from 'prop-types'
 
-class Error extends React.Component {
+class ErrorBoundary extends React.Component {
   state = { hasError: false }
   static getDerivedStateFromError(error) {
     // Zaktualizuj stan, aby następny render pokazał zastępcze UI.
@@ -15,5 +16,9 @@ class Error extends React.Component {
     return this.state.hasError ? message : children
   }
 }
+ErrorBoundary.propTypes = {
+  message: ReactPropTypes.string.isRequired,
+  children: ReactPropTypes.any.isRequired,
+}
 
-export default Error
+export default ErrorBoundary
