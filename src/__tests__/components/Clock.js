@@ -1,5 +1,5 @@
 import Clock from '../../components/Clock'
-import ReactDOM from 'react-dom/client'
+// import ReactDOM from 'react-dom/client'
 import renderer from 'react-test-renderer'
 
 // describe('<Clock />', () => {
