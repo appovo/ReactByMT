@@ -7,9 +7,9 @@ import Error from './ErrorBoundary'
 class TimeboxList extends React.Component {
   state = {
     timeboxes: [
-      { id: 'a', title: 'Uczę się o console', totalTimeInMinutes: 25 },
-      { id: 'b', title: 'Uczę się debugować', totalTimeInMinutes: 15 },
-      { id: 'c', title: 'Uczę się TDD', totalTimeInMinutes: 5 },
+      { id: 'a', title: 'Uczę się o githubie', totalTimeInMinutes: 25 },
+      { id: 'b', title: 'Uczę się sandbox.io', totalTimeInMinutes: 15 },
+      { id: 'c', title: 'Uczę się integrować biblioteki', totalTimeInMinutes: 5 },
     ],
   }
 
