@@ -1,28 +1,28 @@
-import React from 'react'
+import React from "react";
 
-import TimeboxEditor from './TimeboxEditor'
-import CurrentTimebox from './CurrentTimebox'
+import TimeboxEditor from "./TimeboxEditor";
+import CurrentTimebox from "./CurrentTimebox";
 
 class EditableTimebox extends React.Component {
   state = {
-    title: 'Uczę się jQuery!',
+    title: "Komunikuję się z Serwerem",
     totalTimeInMinutes: 3,
-    isEditable: false,
+    isEditable: false
   }
   handleTitleChange = (event) => {
-    this.setState({ title: event.target.value })
+    this.setState({ title: event.target.value });
   }
   handleTotalTimeInMinutesChange = (event) => {
-    this.setState({ totalTimeInMinutes: event.target.value })
+    this.setState({ totalTimeInMinutes: event.target.value });
   }
   handleConfirm = () => {
-    this.setState({ isEditable: false })
+    this.setState({ isEditable: false });
   }
   handleEdit = () => {
-    this.setState({ isEditable: true })
+    this.setState({ isEditable: true });
   }
   render() {
-    const { title, totalTimeInMinutes, isEditable } = this.state
+    const { title, totalTimeInMinutes, isEditable } = this.state;
     return (
       <>
         <React.StrictMode>
@@ -49,4 +49,4 @@ class EditableTimebox extends React.Component {
   }
 }
 
-export default EditableTimebox
+export default EditableTimebox;
