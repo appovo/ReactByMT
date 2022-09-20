@@ -12,7 +12,7 @@ const FetchTimeboxesAPI = {
     },
     replaceTimebox: async function (timeboxToReplace) {
         if (!timeboxToReplace.id) {
-            throw new Error("Can't update a timebox without an ID")
+            throw new Error("Can't replace a timebox without an ID")
         }
         const response = await makeRequest(`${BASE_URL}/${timeboxToReplace.id}`, "PUT", timeboxToReplace)
         const replacedTimebox = await response.json()
@@ -23,7 +23,15 @@ const FetchTimeboxesAPI = {
             throw new Error("Can't remove a timebox without an ID")
         }
         await makeRequest(`${BASE_URL}/${timeboxToRemove.id}`, "DELETE", timeboxToRemove)
-    }
+    },
+    partiallyUpdateTimebox: async function (timeboxToUpdate) {
+        if (!timeboxToUpdate.id) {
+            throw new Error("Can't update a timebox without an ID")
+        }
+        const response = await makeRequest(`${BASE_URL}/${timeboxToUpdate.id}`, "PATCH", timeboxToUpdate)
+        const updatedTimebox = await response.json()
+        return updatedTimebox
+    },
 }
 
 export default FetchTimeboxesAPI

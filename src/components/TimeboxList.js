@@ -54,7 +54,7 @@ class TimeboxList extends React.Component {
       )
   }
   updateTimebox = (indexToUpdate, timeBoxToUpdate) => {
-    TimeboxesAPI.replaceTimebox(timeBoxToUpdate)
+    TimeboxesAPI.partiallyUpdateTimebox(timeBoxToUpdate)
       .then(
         (updatedTimebox) => this.setState((prevState) => {
           const timeboxes = prevState.timeboxes.map((timebox, index) =>
