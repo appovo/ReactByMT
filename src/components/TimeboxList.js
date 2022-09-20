@@ -73,6 +73,11 @@ class TimeboxList extends React.Component {
       console.log('Jest błąd przy tworzeniu timeboksa:', error)
     }
   }
+
+  handleInputChange = (target) => {
+    TimeboxesAPI.getTimeboxesByFullTextSearch(target.currentTarget.value)
+      .then((timeboxes) => this.setState({ timeboxes }))
+  }
   render() {
     return (
       <>
@@ -80,6 +85,8 @@ class TimeboxList extends React.Component {
         {this.state.loading ? "Timeboxy się ładują..." : ''}
         {this.state.error ? "Nie udało się załadować :(" : ''}
         <Error message="Coś się wykrzaczyło w liście:(">
+          <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
+          <input id='tmbx_filter' onChange={this.handleInputChange} />
           {this.state.timeboxes.map((timebox, index) => (
             <Timebox
               key={timebox.id}

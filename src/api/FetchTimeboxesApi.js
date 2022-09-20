@@ -33,9 +33,12 @@ function createTimeboxesAPI({ baseUrl }) {
             const updatedTimebox = await response.json()
             return updatedTimebox
         },
+        getTimeboxesByFullTextSearch: async function (searchQuery) {
+            const response = await makeRequest(BASE_URL + `?q=${searchQuery}`, "GET")
+            const timeboxes = await response.json()
+            return timeboxes
+        },
     }
-
-
 
     async function makeRequest(url, method, body) {
         const jsonBody = body ? JSON.stringify(body) : undefined
