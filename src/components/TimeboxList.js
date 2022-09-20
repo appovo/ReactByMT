@@ -2,8 +2,9 @@ import React from 'react'
 import Timebox from './Timebox'
 import TimeboxCreator from './TimeboxCreator'
 import Error from './ErrorBoundary'
-import TimeboxesAPI from '../api/FetchTimeboxesApi'
+import createTimeboxesAPI from "../api/FetchTimeboxesApi";
 
+const TimeboxesAPI = createTimeboxesAPI({ baseUrl: "http://localhost:5000/timeboxes" })
 
 class TimeboxList extends React.Component {
 
@@ -12,7 +13,6 @@ class TimeboxList extends React.Component {
     loading: true,
     error: null
   }
-
   componentDidMount() {
     TimeboxesAPI.getAllTimeboxes().then(
       (timeboxes) => this.setState({ timeboxes })
