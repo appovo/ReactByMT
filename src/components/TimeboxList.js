@@ -2,7 +2,7 @@ import React from 'react'
 import Timebox from './Timebox'
 import TimeboxCreator from './TimeboxCreator'
 import Error from './ErrorBoundary'
-import createTimeboxesAPI from "../api/FetchTimeboxesApi";
+import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 
 const TimeboxesAPI = createTimeboxesAPI({ baseUrl: "http://localhost:5000/timeboxes" })
 
