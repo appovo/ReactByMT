@@ -1,11 +1,10 @@
 import React from "react";
 
-import EditableTimebox from "./EditableTimebox";
-import TimeboxList from "./TimeboxList";
 import LoginForm from "./LoginForm";
 import ErrorBoundary from "./ErrorBoundary";
 import createAuthenticationAPI from "../api/AxiosAuthenticationApi";
-import jwt from "jsonwebtoken";
+import AuthenticatedApp from "./AuthenticatedApp";
+import AuthenticationContext from "../contexts/AuthenticationContext";
 
 const AuthenticationAPI = createAuthenticationAPI({
   baseUrl: "http://localhost:5000/login",
@@ -23,10 +22,7 @@ class App extends React.Component {
   isUserLoggedIn() {
     return !!this.state.accessToken;
   }
-  getUserEmail() {
-    const decodedToken = jwt.decode(this.state.accessToken);
-    return decodedToken?.email;
-  }
+
   handleLoginAttempt = (credentials) => {
     AuthenticationAPI.login(credentials)
       .then((accessToken) => {
@@ -52,20 +48,11 @@ class App extends React.Component {
         <ErrorBoundary message="Coś nie działa w całej appce :(">
           {this.isUserLoggedIn() ? (
             <>
-              <header className="header">
-                Witaj, {this.getUserEmail()}
-                <a
-                  href="#"
-                  className="header__logout-link"
-                  onClick={this.handleLogout}
-                >
-                  Wyloguj
-                </a>
-              </header>
-              <TimeboxList accessToken={this.state.accessToken} />
-              <ErrorBoundary message="Coś nie działa w EditableTimebox :(">
-                <EditableTimebox />
-              </ErrorBoundary>
+              <AuthenticationContext.Provider
+                value={{ accessToken: this.state.accessToken }}
+              >
+                <AuthenticatedApp onLogout={this.handleLogout} />
+              </AuthenticationContext.Provider>
             </>
           ) : (
             <LoginForm
