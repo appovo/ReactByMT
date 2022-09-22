@@ -4,10 +4,10 @@ import EditableTimebox from "./EditableTimebox";
 import TimeboxList from "./TimeboxList";
 import LoginForm from "./LoginForm";
 import ErrorBoundary from "./ErrorBoundary";
-import createTimeboxesAPI from "../api/AxiosAuthenticationApi";
+import createAuthenticationAPI from "../api/AxiosAuthenticationApi";
 import jwt from "jsonwebtoken";
 
-const AuthenticationAPI = createTimeboxesAPI({
+const AuthenticationAPI = createAuthenticationAPI({
   baseUrl: "http://localhost:5000/login",
 });
 
@@ -25,7 +25,7 @@ class App extends React.Component {
   }
   getUserEmail() {
     const decodedToken = jwt.decode(this.state.accessToken);
-    return decodedToken.email;
+    return decodedToken?.email;
   }
   handleLoginAttempt = (credentials) => {
     AuthenticationAPI.login(credentials)
@@ -62,7 +62,7 @@ class App extends React.Component {
                   Wyloguj
                 </a>
               </header>
-              <TimeboxList />
+              <TimeboxList accessToken={this.state.accessToken} />
               <ErrorBoundary message="Coś nie działa w EditableTimebox :(">
                 <EditableTimebox />
               </ErrorBoundary>
