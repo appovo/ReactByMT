@@ -1,11 +1,10 @@
 import React from "react";
-
 import LoginForm from "./LoginForm";
 import ErrorBoundary from "./ErrorBoundary";
 import createAuthenticationAPI from "../api/AxiosAuthenticationApi";
-import AuthenticatedApp from "./AuthenticatedApp";
 import AuthenticationContext from "../contexts/AuthenticationContext";
 
+const AuthenticatedApp = React.lazy(() => import("./AuthenticatedApp"));
 const AuthenticationAPI = createAuthenticationAPI({
   baseUrl: "http://localhost:5000/login",
 });
@@ -51,7 +50,9 @@ class App extends React.Component {
               <AuthenticationContext.Provider
                 value={{ accessToken: this.state.accessToken }}
               >
-                <AuthenticatedApp onLogout={this.handleLogout} />
+                <React.Suspense>
+                  <AuthenticatedApp onLogout={this.handleLogout} />
+                </React.Suspense>
               </AuthenticationContext.Provider>
             </>
           ) : (
