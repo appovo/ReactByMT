@@ -15,16 +15,10 @@ class App extends React.Component {
   state = {
     accessToken: null,
     previousLoginAttemptFailed: false,
-    timeOutId: "",
   };
   componentDidMount() {
     const accessToken = localStorage.getItem("accessToken");
-    this.setState({
-      accessToken,
-      timeOutId: setTimeout(() => {
-        this.setState({ accessToken: null });
-      }, 10000),
-    });
+    this.setState({ accessToken });
   }
   isUserLoggedIn() {
     return !!this.state.accessToken;
@@ -50,12 +44,7 @@ class App extends React.Component {
   handleLogout = () => {
     this.setState({ previousLoginAttemptFailed: false, accessToken: null });
     localStorage.removeItem("accessToken");
-    clearTimeout(this.state.timeOutId);
   };
-
-  componentWillUnmount() {
-    clearTimeout(this.state.timeOutId);
-  }
 
   render() {
     return (
