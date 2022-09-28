@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-export default function InspirationalQuote() {
+export default function InspirationalQuote({ render }) {
   const [quote, setQuote] = useState(null);
   useEffect(() => {
     import("inspirational-quotes")
@@ -9,13 +9,5 @@ export default function InspirationalQuote() {
       })
       .catch(() => console.log("Couldn't load quote"));
   }, []);
-
-  return (
-    <figure>
-      <blockquote>{quote?.text}</blockquote>
-      <figcaption>
-        <cite>{quote?.author}</cite>
-      </figcaption>
-    </figure>
-  );
+  return render(quote?.text, quote?.author);
 }

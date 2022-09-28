@@ -3,6 +3,8 @@ import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { TimeboxesList } from "./TimeboxesList";
+import Timebox from "./Timebox";
+import ReadOnlyTimebox from "./ReadOnlyTimebox";
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
@@ -18,7 +20,7 @@ function TimeboxesManager(accessToken) {
       .then((timeboxes) => setTimeboxes(timeboxes))
       .catch((error) => setError(error))
       .finally(() => setLoading(false));
-  }, []);
+  }, [accessToken]);
 
   const addTimebox = (timebox) => {
     TimeboxesAPI.addTimebox(timebox).then((addedTimebox) =>
@@ -63,7 +65,31 @@ function TimeboxesManager(accessToken) {
       (timeboxes) => setTimeboxes(timeboxes)
     );
   };
-
+  const renderTimebox = (timebox, index) => {
+    return (
+      <Timebox
+        key={timebox.id}
+        title={timebox.title}
+        totalTimeInMinutes={timebox.totalTimeInMinutes}
+        onDelete={() => removeTimebox(index)}
+        onEdit={() =>
+          updateTimebox(index, {
+            ...timebox,
+            title: "Updated timebox",
+          })
+        }
+      />
+    );
+  };
+  const renderReadOnlyTimebox = (timebox) => {
+    return (
+      <ReadOnlyTimebox
+        key={timebox.id}
+        title={timebox.title}
+        totalTimeInMinutes={timebox.totalTimeInMinutes}
+      />
+    );
+  };
   return (
     <>
       <TimeboxCreator onCreate={handleCreate} />
@@ -72,11 +98,8 @@ function TimeboxesManager(accessToken) {
       <Error message="Coś się wykrzaczyło w liście:(">
         <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
         <input id="tmbx_filter" onChange={handleInputChange} />
-        <TimeboxesList
-          timeboxes={timeboxes}
-          onTimeBoxDelete={removeTimebox}
-          onEdit={updateTimebox}
-        />
+        <TimeboxesList timeboxes={timeboxes} render={renderTimebox} />
+        <TimeboxesList timeboxes={timeboxes} render={renderReadOnlyTimebox} />
       </Error>
     </>
   );
