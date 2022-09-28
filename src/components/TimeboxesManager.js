@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Timebox from "./Timebox";
 import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
+import { TimeboxesList } from "./TimeboxesList";
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
 });
 
-function TimeboxList(accessToken) {
+function TimeboxesManager(accessToken) {
   const [timeboxes, setTimeboxes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,23 +72,14 @@ function TimeboxList(accessToken) {
       <Error message="Coś się wykrzaczyło w liście:(">
         <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
         <input id="tmbx_filter" onChange={handleInputChange} />
-        {timeboxes.map((timebox, index) => (
-          <Timebox
-            key={timebox.id}
-            title={timebox.title}
-            totalTimeInMinutes={timebox.totalTimeInMinutes}
-            onDelete={() => removeTimebox(index)}
-            onEdit={() =>
-              updateTimebox(index, {
-                ...timebox,
-                title: "Updated timebox",
-              })
-            }
-          />
-        ))}
+        <TimeboxesList
+          timeboxes={timeboxes}
+          onTimeBoxDelete={removeTimebox}
+          onEdit={updateTimebox}
+        />
       </Error>
     </>
   );
 }
 
-export default TimeboxList;
+export default TimeboxesManager;

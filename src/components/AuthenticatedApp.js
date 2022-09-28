@@ -1,6 +1,6 @@
 import Header from "./Header";
 import EditableTimebox from "./EditableTimebox";
-import TimeboxList from "./TimeboxList";
+import TimeboxList from "./TimeboxesManager";
 import InspirationalQuote from "./InspirationalQuote";
 import AuthenticationContext from "../contexts/AuthenticationContext";
 import { useContext } from "react";
