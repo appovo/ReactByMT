@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import TimeboxEditor from "./TimeboxEditor";
 import CurrentTimebox from "./CurrentTimebox";
 
-function EditableTimebox() {
+function EditableCurrentTimebox() {
   const [title, setTitle] = useState("Używam useState");
   const [totalTimeInMinutes, setTotalTimeInMinutes] = useState(3);
   const [isEditable, setIsEditable] = useState(false);
@@ -45,4 +45,4 @@ function EditableTimebox() {
   );
 }
 
-export default EditableTimebox;
+export default EditableCurrentTimebox;
