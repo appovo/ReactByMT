@@ -1,5 +1,5 @@
 import Header from "./Header";
-import EditableCurrentTimebox from "./EditableCurrentTimebox";
+import CurrentTimebox from "./CurrentTimebox";
 import TimeboxList from "./TimeboxesManager";
 import InspirationalQuote from "./InspirationalQuote";
 import AuthenticationContext from "../contexts/AuthenticationContext";
@@ -34,7 +34,7 @@ export default function AuthenticatedApp({ onLogout }) {
     <>
       <Header onLogout={onLogout} />
       <TimeboxList accessToken={accessToken} />
-      <EditableCurrentTimebox />
+      <CurrentTimebox title="Używam useState" totalTimeInMinutes={3} />
       <InspirationalQuote
         render={Math.random() < 0.5 ? renderQuote : renderQuoteBold}
       />

@@ -5,6 +5,7 @@ import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { TimeboxesList } from "./TimeboxesList";
 import Timebox from "./Timebox";
 import ReadOnlyTimebox from "./ReadOnlyTimebox";
+import TimeboxEditor from "./TimeboxEditor";
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
@@ -14,6 +15,7 @@ function TimeboxesManager(accessToken) {
   const [timeboxes, setTimeboxes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editIndex, setEditIndex] = useState(null);
 
   useEffect(() => {
     TimeboxesAPI.getAllTimeboxes(accessToken)
@@ -42,13 +44,15 @@ function TimeboxesManager(accessToken) {
   };
   const updateTimebox = (indexToUpdate, timeBoxToUpdate) => {
     TimeboxesAPI.partiallyUpdateTimebox(timeBoxToUpdate).then(
-      (updatedTimebox) =>
+      (updatedTimebox) => {
         setTimeboxes((prevState) => {
           const timeboxes = prevState.map((timebox, index) =>
             index === indexToUpdate ? updatedTimebox : timebox
           );
           return timeboxes;
-        })
+        });
+        setEditIndex(null);
+      }
     );
   };
 
@@ -67,18 +71,30 @@ function TimeboxesManager(accessToken) {
   };
   const renderTimebox = (timebox, index) => {
     return (
-      <Timebox
-        key={timebox.id}
-        title={timebox.title}
-        totalTimeInMinutes={timebox.totalTimeInMinutes}
-        onDelete={() => removeTimebox(index)}
-        onEdit={() =>
-          updateTimebox(index, {
-            ...timebox,
-            title: "Updated timebox",
-          })
-        }
-      />
+      <>
+        {editIndex === index ? (
+          <TimeboxEditor
+            initialTitle={timebox.title}
+            initialTotalTimeInMinutes={timebox.totalTimeInMinutes}
+            onUpdate={(updatedTimebox) =>
+              updateTimebox(index, {
+                ...timebox,
+                ...updatedTimebox,
+              })
+            }
+          />
+        ) : (
+          <Timebox
+            key={timebox.id}
+            title={timebox.title}
+            totalTimeInMinutes={timebox.totalTimeInMinutes}
+            onDelete={() => removeTimebox(index)}
+            onEdit={() => {
+              setEditIndex(index);
+            }}
+          />
+        )}
+      </>
     );
   };
   const renderReadOnlyTimebox = (timebox) => {

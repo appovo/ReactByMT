@@ -3,7 +3,7 @@ import Clock from "./Clock";
 import ProgressBar from "./ProgressBar";
 import { getMinutesAndSecondsFromDurationInSeconds } from "../lib/time";
 
-function CurrentTimebox({ title, totalTimeInMinutes, isEditable, onEdit }) {
+function CurrentTimebox({ title, totalTimeInMinutes }) {
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [pausesCount, setPausesCount] = useState(0);
@@ -56,7 +56,7 @@ function CurrentTimebox({ title, totalTimeInMinutes, isEditable, onEdit }) {
     getMinutesAndSecondsFromDurationInSeconds(timeLeftInSeconds);
   const progressInPercent = (elapsedTimeInSeconds / totalTimeInSeconds) * 100.0;
   return (
-    <div className={`CurrentTimebox ${isEditable ? "inactive" : ""}`}>
+    <div className={`CurrentTimebox`}>
       <h1>{title}</h1>
       <Clock
         minutes={minutesLeft}
@@ -69,9 +69,6 @@ function CurrentTimebox({ title, totalTimeInMinutes, isEditable, onEdit }) {
         color="red"
         big
       />
-      <button onClick={onEdit} disabled={isEditable}>
-        Edytuj
-      </button>
       <button onClick={handleStart} disabled={isRunning}>
         Start
       </button>
