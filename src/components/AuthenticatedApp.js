@@ -1,4 +1,5 @@
 import Header from "./Header";
+import UserGreeting from "./UserGreeting";
 import CurrentTimebox from "./CurrentTimebox";
 import TimeboxList from "./TimeboxesManager";
 import InspirationalQuote from "./InspirationalQuote";
@@ -32,7 +33,12 @@ export default function AuthenticatedApp({ onLogout }) {
   };
   return (
     <>
-      <Header onLogout={onLogout} />
+      <Header>
+        <UserGreeting />
+        <a href="/#" className="header__logout-link" onClick={onLogout}>
+          Wyloguj
+        </a>
+      </Header>
       <TimeboxList accessToken={accessToken} />
       <CurrentTimebox title="Używam useState" totalTimeInMinutes={3} />
       <InspirationalQuote
