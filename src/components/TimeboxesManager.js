@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
@@ -10,6 +10,7 @@ import TimeboxEditor from "./TimeboxEditor";
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
 });
+const TimeboxCreatorMemo = React.memo(TimeboxCreator);
 
 function TimeboxesManager(accessToken) {
   const [timeboxes, setTimeboxes] = useState([]);
@@ -56,13 +57,13 @@ function TimeboxesManager(accessToken) {
     );
   };
 
-  const handleCreate = (createdTimebox) => {
+  const handleCreate = useCallback((createdTimebox) => {
     try {
       addTimebox(createdTimebox);
     } catch (error) {
       console.log("Jest błąd przy tworzeniu timeboksa:", error);
     }
-  };
+  }, []);
 
   const handleInputChange = (target) => {
     TimeboxesAPI.getTimeboxesByFullTextSearch(target.currentTarget.value).then(
@@ -70,31 +71,28 @@ function TimeboxesManager(accessToken) {
     );
   };
   const renderTimebox = (timebox, index) => {
-    return (
-      <>
-        {editIndex === index ? (
-          <TimeboxEditor
-            initialTitle={timebox.title}
-            initialTotalTimeInMinutes={timebox.totalTimeInMinutes}
-            onUpdate={(updatedTimebox) =>
-              updateTimebox(index, {
-                ...timebox,
-                ...updatedTimebox,
-              })
-            }
-          />
-        ) : (
-          <Timebox
-            key={timebox.id}
-            title={timebox.title}
-            totalTimeInMinutes={timebox.totalTimeInMinutes}
-            onDelete={() => removeTimebox(index)}
-            onEdit={() => {
-              setEditIndex(index);
-            }}
-          />
-        )}
-      </>
+    return editIndex === index ? (
+      <TimeboxEditor
+        key={timebox.id}
+        initialTitle={timebox.title}
+        initialTotalTimeInMinutes={timebox.totalTimeInMinutes}
+        onUpdate={(updatedTimebox) =>
+          updateTimebox(index, {
+            ...timebox,
+            ...updatedTimebox,
+          })
+        }
+      />
+    ) : (
+      <Timebox
+        key={timebox.id}
+        title={timebox.title}
+        totalTimeInMinutes={timebox.totalTimeInMinutes}
+        onDelete={() => removeTimebox(index)}
+        onEdit={() => {
+          setEditIndex(index);
+        }}
+      />
     );
   };
   const renderReadOnlyTimebox = (timebox) => {
@@ -108,7 +106,7 @@ function TimeboxesManager(accessToken) {
   };
   return (
     <>
-      <TimeboxCreator onCreate={handleCreate} />
+      <TimeboxCreatorMemo onCreate={handleCreate} />
       {loading ? "Timeboxy się ładują..." : ""}
       {error ? "Nie udało się załadować :(" : ""}
       <Error message="Coś się wykrzaczyło w liście:(">
@@ -121,4 +119,5 @@ function TimeboxesManager(accessToken) {
   );
 }
 
+// export default React.memo(TimeboxesManager);
 export default TimeboxesManager;
