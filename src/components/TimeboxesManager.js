@@ -4,7 +4,6 @@ import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { TimeboxesList } from "./TimeboxesList";
 import Timebox from "./Timebox";
-import ReadOnlyTimebox from "./ReadOnlyTimebox";
 import TimeboxEditor from "./TimeboxEditor";
 
 const TimeboxesAPI = createTimeboxesAPI({
@@ -95,15 +94,7 @@ function TimeboxesManager(accessToken) {
       />
     );
   };
-  const renderReadOnlyTimebox = (timebox) => {
-    return (
-      <ReadOnlyTimebox
-        key={timebox.id}
-        title={timebox.title}
-        totalTimeInMinutes={timebox.totalTimeInMinutes}
-      />
-    );
-  };
+
   return (
     <>
       <TimeboxCreatorMemo onCreate={handleCreate} />
@@ -113,7 +104,6 @@ function TimeboxesManager(accessToken) {
         <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
         <input id="tmbx_filter" onChange={handleInputChange} />
         <TimeboxesList timeboxes={timeboxes} render={renderTimebox} />
-        <TimeboxesList timeboxes={timeboxes} render={renderReadOnlyTimebox} />
       </Error>
     </>
   );
