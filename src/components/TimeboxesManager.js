@@ -10,8 +10,9 @@ const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
 });
 const TimeboxCreatorMemo = React.memo(TimeboxCreator);
+const TimeboxesListMemo = React.memo(TimeboxesList);
 
-function TimeboxesManager(accessToken) {
+const TimeboxesManager = React.memo((accessToken) => {
   const [timeboxes, setTimeboxes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -103,11 +104,11 @@ function TimeboxesManager(accessToken) {
       <Error message="Coś się wykrzaczyło w liście:(">
         <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
         <input id="tmbx_filter" onChange={handleInputChange} />
-        <TimeboxesList timeboxes={timeboxes} render={renderTimebox} />
+        <TimeboxesListMemo timeboxes={timeboxes} render={renderTimebox} />
       </Error>
     </>
   );
-}
+});
 
 // export default React.memo(TimeboxesManager);
 export default TimeboxesManager;
