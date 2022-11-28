@@ -1,10 +1,23 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useReducer } from "react";
 import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { TimeboxesList } from "./TimeboxesList";
 import Timebox from "./Timebox";
 import TimeboxEditor from "./TimeboxEditor";
+
+const stateReducer = (prevState, stateChanges) => {
+  let newState = prevState;
+  if (typeof stateChanges === "function") {
+    newState = stateChanges(prevState);
+  } else {
+    newState = {
+      ...prevState,
+      ...stateChanges,
+    };
+  }
+  return newState;
+};
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
@@ -13,46 +26,50 @@ const TimeboxCreatorMemo = React.memo(TimeboxCreator);
 const TimeboxesListMemo = React.memo(TimeboxesList);
 
 const TimeboxesManager = React.memo((accessToken) => {
-  const [timeboxes, setTimeboxes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [editIndex, setEditIndex] = useState(null);
+  const initialState = {
+    timeboxes: [],
+    editIndex: null,
+    loading: false,
+    error: null,
+  };
+
+  const [state, setState] = useReducer(stateReducer, initialState);
 
   useEffect(() => {
     TimeboxesAPI.getAllTimeboxes(accessToken)
-      .then((timeboxes) => setTimeboxes(timeboxes))
-      .catch((error) => setError(error))
-      .finally(() => setLoading(false));
+      .then((timeboxes) => setState({ timeboxes }))
+      .catch((error) => setState({ error }))
+      .finally(() => setState({ loading: false }));
   }, [accessToken]);
 
   const addTimebox = (timebox) => {
     TimeboxesAPI.addTimebox(timebox).then((addedTimebox) =>
-      setTimeboxes((prevState) => {
-        const timeboxes = [...prevState, addedTimebox];
-        return timeboxes;
+      setState((prevState) => {
+        const timeboxes = [...prevState.timeboxes, addedTimebox];
+        return { timeboxes };
       })
     );
   };
   const removeTimebox = (indexToRemove) => {
-    TimeboxesAPI.removeTimebox(timeboxes[indexToRemove]).then(() => {
-      setTimeboxes((prevState) => {
-        const timeboxes = prevState.filter(
+    TimeboxesAPI.removeTimebox(state.timeboxes[indexToRemove]).then(() => {
+      setState((prevState) => {
+        const timeboxes = prevState.timeboxes.filter(
           (timebox, index) => index !== indexToRemove
         );
-        return timeboxes;
+        return { timeboxes };
       });
     });
   };
   const updateTimebox = (indexToUpdate, timeBoxToUpdate) => {
     TimeboxesAPI.partiallyUpdateTimebox(timeBoxToUpdate).then(
       (updatedTimebox) => {
-        setTimeboxes((prevState) => {
-          const timeboxes = prevState.map((timebox, index) =>
+        setState((prevState) => {
+          const timeboxes = prevState.timeboxes.map((timebox, index) =>
             index === indexToUpdate ? updatedTimebox : timebox
           );
-          return timeboxes;
+          return { timeboxes };
         });
-        setEditIndex(null);
+        setState({ editIndex: null });
       }
     );
   };
@@ -67,11 +84,11 @@ const TimeboxesManager = React.memo((accessToken) => {
 
   const handleInputChange = (target) => {
     TimeboxesAPI.getTimeboxesByFullTextSearch(target.currentTarget.value).then(
-      (timeboxes) => setTimeboxes(timeboxes)
+      (timeboxes) => setState({ timeboxes })
     );
   };
   const renderTimebox = (timebox, index) => {
-    return editIndex === index ? (
+    return state.editIndex === index ? (
       <TimeboxEditor
         key={timebox.id}
         initialTitle={timebox.title}
@@ -90,7 +107,7 @@ const TimeboxesManager = React.memo((accessToken) => {
         totalTimeInMinutes={timebox.totalTimeInMinutes}
         onDelete={() => removeTimebox(index)}
         onEdit={() => {
-          setEditIndex(index);
+          setState({ editIndex: index });
         }}
       />
     );
@@ -99,16 +116,15 @@ const TimeboxesManager = React.memo((accessToken) => {
   return (
     <>
       <TimeboxCreatorMemo onCreate={handleCreate} />
-      {loading ? "Timeboxy się ładują..." : ""}
-      {error ? "Nie udało się załadować :(" : ""}
+      {state.loading ? "Timeboxy się ładują..." : ""}
+      {state.error ? "Nie udało się załadować :(" : ""}
       <Error message="Coś się wykrzaczyło w liście:(">
         <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
         <input id="tmbx_filter" onChange={handleInputChange} />
-        <TimeboxesListMemo timeboxes={timeboxes} render={renderTimebox} />
+        <TimeboxesListMemo timeboxes={state.timeboxes} render={renderTimebox} />
       </Error>
     </>
   );
 });
 
-// export default React.memo(TimeboxesManager);
 export default TimeboxesManager;

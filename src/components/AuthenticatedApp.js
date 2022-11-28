@@ -1,7 +1,7 @@
 import Header from "./Header";
 import UserGreeting from "./UserGreeting";
 import CurrentTimebox from "./CurrentTimebox";
-import TimeboxList from "./TimeboxesManager";
+import TimeboxesManager from "./TimeboxesManager";
 import InspirationalQuote from "./InspirationalQuote";
 import AuthenticationContext from "../contexts/AuthenticationContext";
 import { useContext } from "react";
@@ -39,7 +39,7 @@ export default function AuthenticatedApp({ onLogout }) {
           Wyloguj
         </a>
       </Header>
-      <TimeboxList accessToken={accessToken} />
+      <TimeboxesManager accessToken={accessToken} />
       <CurrentTimebox title="Używam useState" totalTimeInMinutes={3} />
       <InspirationalQuote
         render={Math.random() < 0.5 ? renderQuote : renderQuoteBold}
