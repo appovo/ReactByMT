@@ -1,84 +1,110 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import Clock from "./Clock";
 import ProgressBar from "./ProgressBar";
 import { getMinutesAndSecondsFromDurationInSeconds } from "../lib/time";
 
-function CurrentTimebox({ title, totalTimeInMinutes }) {
-  const [isRunning, setIsRunning] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [pausesCount, setPausesCount] = useState(0);
-  const [elapsedTimeInSeconds, setElapsedTimeInSeconds] = useState(0);
-  const [intervalId, setIntervalId] = useState(null);
+const stateReducer = (prevState, stateChanges) => {
+  let newState = prevState;
+  if (stateChanges.elapsedTimeInSeconds === "tick") {
+    newState = {
+      ...prevState,
+      elapsedTimeInSeconds: prevState.elapsedTimeInSeconds + 0.1,
+    };
+  } else if (typeof stateChanges === "function") {
+    newState = stateChanges(prevState);
+  } else {
+    newState = {
+      ...prevState,
+      ...stateChanges,
+    };
+  }
+  return newState;
+};
 
+function CurrentTimebox({ title, totalTimeInMinutes }) {
+  const initialState = {
+    isRunning: false,
+    isPaused: false,
+    pausesCount: 0,
+    elapsedTimeInSeconds: 0,
+    intervalId: null,
+  };
+  const [state, setState] = useReducer(stateReducer, initialState);
+  console.log(state.isRunning);
   const handleStart = () => {
-    setIsRunning(true);
+    setState({ isRunning: true });
     startTimer();
   };
 
   const handleStop = () => {
-    setIsRunning(false);
-    setIsPaused(false);
-    setPausesCount(0);
-    setElapsedTimeInSeconds(0);
+    setState({ isRunning: false });
+    setState({ isPaused: false });
+    setState({ pausesCount: false });
+    setState({ elapsedTimeInSeconds: 0 });
     stopTimer();
   };
 
   const startTimer = () => {
-    if (intervalId === null) {
+    if (state.intervalId === null) {
       const id = window.setInterval(() => {
-        setElapsedTimeInSeconds((prevState) => prevState + 0.1);
+        setState({
+          elapsedTimeInSeconds: "tick",
+        });
       }, 100);
-      setIntervalId(id);
+      setState({ intervalId: id });
     }
   };
 
   const stopTimer = () => {
-    window.clearInterval(intervalId);
-    setIntervalId(null);
+    window.clearInterval(state.intervalId);
+    setState({ intervalId: null });
   };
 
   const togglePause = () => {
-    const currentlyPaused = !isPaused;
-    setPausesCount((prevState) =>
-      currentlyPaused ? prevState + 1 : prevState
-    );
+    const currentlyPaused = !state.isPaused;
+    setState({
+      pausesCount: currentlyPaused ? state.pausesCount + 1 : state.pausesCount,
+    });
     if (currentlyPaused) {
       stopTimer();
     } else {
       startTimer();
     }
-    setIsPaused(currentlyPaused);
+    setState({ isPaused: currentlyPaused });
   };
 
   const totalTimeInSeconds = totalTimeInMinutes * 60;
-  const timeLeftInSeconds = totalTimeInSeconds - elapsedTimeInSeconds;
+  const timeLeftInSeconds = totalTimeInSeconds - state.elapsedTimeInSeconds;
+
   const [minutesLeft, secondsLeft] =
     getMinutesAndSecondsFromDurationInSeconds(timeLeftInSeconds);
-  const progressInPercent = (elapsedTimeInSeconds / totalTimeInSeconds) * 100.0;
+
+  const progressInPercent =
+    (state.elapsedTimeInSeconds / totalTimeInSeconds) * 100.0;
   return (
     <div className={`CurrentTimebox`}>
       <h1>{title}</h1>
       <Clock
         minutes={minutesLeft}
         seconds={secondsLeft}
-        className={isPaused ? "inactive" : ""}
+        className={state.isPaused ? "inactive" : ""}
       />
       <ProgressBar
         percent={progressInPercent}
-        className={isPaused ? "inactive" : ""}
+        className={state.isPaused ? "inactive" : ""}
         color="red"
         big
       />
-      <button onClick={handleStart} disabled={isRunning}>
+      <button onClick={handleStart} disabled={state.isRunning}>
         Start
       </button>
-      <button onClick={handleStop} disabled={!isRunning}>
+      <button onClick={handleStop} disabled={!state.isRunning}>
         Stop
       </button>
-      <button onClick={togglePause} disabled={!isRunning}>
-        {isPaused ? "Wznów" : "Pauzuj"}
+      <button onClick={togglePause} disabled={!state.isRunning}>
+        {state.isPaused ? "Wznów" : "Pauzuj"}
       </button>
-      Liczba przerw: {pausesCount}
+      Liczba przerw: {state.pausesCount}
     </div>
   );
 }
