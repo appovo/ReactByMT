@@ -30,7 +30,7 @@ function CurrentTimebox({ title, totalTimeInMinutes }) {
     intervalId: null,
   };
   const [state, setState] = useReducer(stateReducer, initialState);
-  console.log(state.isRunning);
+
   const handleStart = () => {
     setState({ isRunning: true });
     startTimer();

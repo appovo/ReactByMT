@@ -1,23 +1,11 @@
-import React, { useEffect, useState, useCallback, useReducer } from "react";
+import React, { useEffect, useCallback, useReducer } from "react";
 import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { TimeboxesList } from "./TimeboxesList";
 import Timebox from "./Timebox";
 import TimeboxEditor from "./TimeboxEditor";
-
-const stateReducer = (prevState, stateChanges) => {
-  let newState = prevState;
-  if (typeof stateChanges === "function") {
-    newState = stateChanges(prevState);
-  } else {
-    newState = {
-      ...prevState,
-      ...stateChanges,
-    };
-  }
-  return newState;
-};
+import { timeboxesReducer } from "./reducers";
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
@@ -26,50 +14,40 @@ const TimeboxCreatorMemo = React.memo(TimeboxCreator);
 const TimeboxesListMemo = React.memo(TimeboxesList);
 
 const TimeboxesManager = React.memo((accessToken) => {
-  const initialState = {
-    timeboxes: [],
-    editIndex: null,
-    loading: false,
-    error: null,
-  };
-
-  const [state, setState] = useReducer(stateReducer, initialState);
+  const [state, dispatch] = useReducer(
+    timeboxesReducer,
+    undefined,
+    timeboxesReducer
+  );
 
   useEffect(() => {
     TimeboxesAPI.getAllTimeboxes(accessToken)
-      .then((timeboxes) => setState({ timeboxes }))
-      .catch((error) => setState({ error }))
-      .finally(() => setState({ loading: false }));
+      .then((timeboxes) => dispatch({ type: "TIMEBOXES_SET", timeboxes }))
+      .catch((error) => dispatch({ type: "ERROR_SET", error }))
+      .finally(() => dispatch({ type: "LOADING_INDICATOR_DISABLE" }));
   }, [accessToken]);
 
   const addTimebox = (timebox) => {
     TimeboxesAPI.addTimebox(timebox).then((addedTimebox) =>
-      setState((prevState) => {
-        const timeboxes = [...prevState.timeboxes, addedTimebox];
-        return { timeboxes };
-      })
+      dispatch({ type: "TIMEBOX_ADD", timebox: addedTimebox })
     );
   };
-  const removeTimebox = (indexToRemove) => {
-    TimeboxesAPI.removeTimebox(state.timeboxes[indexToRemove]).then(() => {
-      setState((prevState) => {
-        const timeboxes = prevState.timeboxes.filter(
-          (timebox, index) => index !== indexToRemove
-        );
-        return { timeboxes };
+  const removeTimebox = (timeboxToRemove) => {
+    TimeboxesAPI.removeTimebox(timeboxToRemove).then(() => {
+      dispatch({
+        type: "TIMEBOX_REMOVE",
+        removedTimebox: timeboxToRemove,
       });
     });
   };
-  const updateTimebox = (indexToUpdate, timeBoxToUpdate) => {
+  const updateTimebox = (timeBoxToUpdate) => {
     TimeboxesAPI.partiallyUpdateTimebox(timeBoxToUpdate).then(
-      (updatedTimebox) => {
-        setState((prevState) => {
-          const timeboxes = prevState.timeboxes.map((timebox, index) =>
-            index === indexToUpdate ? updatedTimebox : timebox
-          );
-          return { timeboxes };
+      (replacedTimebox) => {
+        dispatch({
+          type: "TIMEBOX_REPLACE",
+          replacedTimebox,
         });
-        setState({ editIndex: null });
+        dispatch({ type: "TIMEBOX_EDIT_STOP" });
       }
     );
   };
@@ -84,30 +62,34 @@ const TimeboxesManager = React.memo((accessToken) => {
 
   const handleInputChange = (target) => {
     TimeboxesAPI.getTimeboxesByFullTextSearch(target.currentTarget.value).then(
-      (timeboxes) => setState({ timeboxes })
+      (timeboxes) => dispatch({ timeboxes })
     );
   };
-  const renderTimebox = (timebox, index) => {
-    return state.editIndex === index ? (
+  const renderTimebox = (timebox) => {
+    return state.currentlyEditedTimeboxId === timebox.id ? (
       <TimeboxEditor
         key={timebox.id}
         initialTitle={timebox.title}
         initialTotalTimeInMinutes={timebox.totalTimeInMinutes}
-        onUpdate={(updatedTimebox) =>
-          updateTimebox(index, {
+        onCancel={() => dispatch({ type: "TIMEBOX_EDIT_STOP" })}
+        onUpdate={(updatedTimebox) => {
+          updateTimebox({
             ...timebox,
             ...updatedTimebox,
-          })
-        }
+          });
+        }}
       />
     ) : (
       <Timebox
         key={timebox.id}
         title={timebox.title}
         totalTimeInMinutes={timebox.totalTimeInMinutes}
-        onDelete={() => removeTimebox(index)}
+        onDelete={() => removeTimebox(timebox)}
         onEdit={() => {
-          setState({ editIndex: index });
+          dispatch({
+            type: "TIMEBOX_EDIT_START",
+            currentlyEditedTimeboxId: timebox.id,
+          });
         }}
       />
     );
