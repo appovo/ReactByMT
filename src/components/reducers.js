@@ -1,11 +1,14 @@
-const initialState = {
+const timeboxesInitialState = {
   timeboxes: [],
   editIndex: null,
   loading: false,
   error: null,
 };
 
-export const timeboxesReducer = (state = initialState, action = {}) => {
+export const timeboxesReducer = (
+  state = timeboxesInitialState,
+  action = {}
+) => {
   switch (action.type) {
     case "TIMEBOXES_SET": {
       const { timeboxes } = action;
@@ -44,6 +47,52 @@ export const timeboxesReducer = (state = initialState, action = {}) => {
       const { error } = action;
       return { ...state, error };
     }
+    default:
+      return state;
+  }
+};
+const timeboxInitialState = {
+  isRunning: false,
+  isPaused: false,
+  pausesCount: 0,
+  elapsedTimeInSeconds: 0,
+  intervalId: null,
+};
+export const timeboxReducer = (state = timeboxInitialState, action = {}) => {
+  switch (action.type) {
+    case "RUNNING_START":
+      return { ...state, isRunning: true };
+    case "RUNNING_STOP":
+      return { ...state, isRunning: false };
+    case "PAUSE":
+      return { ...state, isPaused: true };
+    case "UNPAUSE":
+      return { ...state, isPaused: false };
+    case "PAUSES_COUNT_CLEAR":
+      return { ...state, pausesCount: 0 };
+    case "ELAPSED_SECONDS_CLEAR":
+      return { ...state, elapsedTimeInSeconds: 0 };
+    case "TIMER_START":
+      return {
+        ...state,
+        elapsedTimeInSeconds: state.elapsedTimeInSeconds + 0.1,
+      };
+    case "INTERVAL_ID_SET": {
+      const { id } = action;
+      return { ...state, intervalId: id };
+    }
+    case "INTERVAL_ID_CLEAR": {
+      return { ...state, intervalId: null };
+    }
+    case "PAUSES_COUNT_INCREMENT":
+      return {
+        ...state,
+        pausesCount: !state.isPaused
+          ? state.pausesCount + 1
+          : state.pausesCount,
+      };
+    case "TOGGLE_PAUSE":
+      return { ...state, isPaused: !state.isPaused };
     default:
       return state;
   }

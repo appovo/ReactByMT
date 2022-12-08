@@ -2,75 +2,55 @@ import React, { useReducer } from "react";
 import Clock from "./Clock";
 import ProgressBar from "./ProgressBar";
 import { getMinutesAndSecondsFromDurationInSeconds } from "../lib/time";
-
-const stateReducer = (prevState, stateChanges) => {
-  let newState = prevState;
-  if (stateChanges.elapsedTimeInSeconds === "tick") {
-    newState = {
-      ...prevState,
-      elapsedTimeInSeconds: prevState.elapsedTimeInSeconds + 0.1,
-    };
-  } else if (typeof stateChanges === "function") {
-    newState = stateChanges(prevState);
-  } else {
-    newState = {
-      ...prevState,
-      ...stateChanges,
-    };
-  }
-  return newState;
-};
+import { timeboxReducer } from "./reducers";
 
 function CurrentTimebox({ title, totalTimeInMinutes }) {
-  const initialState = {
-    isRunning: false,
-    isPaused: false,
-    pausesCount: 0,
-    elapsedTimeInSeconds: 0,
-    intervalId: null,
-  };
-  const [state, setState] = useReducer(stateReducer, initialState);
+  const [state, dispatch] = useReducer(
+    timeboxReducer,
+    undefined,
+    timeboxReducer
+  );
 
   const handleStart = () => {
-    setState({ isRunning: true });
+    dispatch({ type: "RUNNING_START" });
     startTimer();
   };
 
   const handleStop = () => {
-    setState({ isRunning: false });
-    setState({ isPaused: false });
-    setState({ pausesCount: false });
-    setState({ elapsedTimeInSeconds: 0 });
+    dispatch({ type: "RUNNING_STOP" });
+    dispatch({ type: "UNPAUSE" });
+    dispatch({ type: "PAUSES_COUNT_CLEAR" });
+    dispatch({ type: "ELAPSED_SECONDS_CLEAR" });
     stopTimer();
   };
 
   const startTimer = () => {
     if (state.intervalId === null) {
       const id = window.setInterval(() => {
-        setState({
-          elapsedTimeInSeconds: "tick",
+        dispatch({
+          type: "TIMER_START",
         });
       }, 100);
-      setState({ intervalId: id });
+      dispatch({ type: "INTERVAL_ID_SET", id });
     }
   };
 
   const stopTimer = () => {
     window.clearInterval(state.intervalId);
-    setState({ intervalId: null });
+    dispatch({ type: "INTERVAL_ID_CLEAR" });
   };
 
   const togglePause = () => {
     const currentlyPaused = !state.isPaused;
-    setState({
-      pausesCount: currentlyPaused ? state.pausesCount + 1 : state.pausesCount,
+    dispatch({
+      type: "PAUSES_COUNT_INCREMENT",
     });
     if (currentlyPaused) {
       stopTimer();
     } else {
       startTimer();
     }
-    setState({ isPaused: currentlyPaused });
+    dispatch({ type: "TOGGLE_PAUSE" });
   };
 
   const totalTimeInSeconds = totalTimeInMinutes * 60;
