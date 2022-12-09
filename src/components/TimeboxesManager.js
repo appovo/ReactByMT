@@ -6,6 +6,16 @@ import { TimeboxesList } from "./TimeboxesList";
 import Timebox from "./Timebox";
 import TimeboxEditor from "./TimeboxEditor";
 import { timeboxesReducer } from "./reducers";
+import {
+  setTimeboxes,
+  setError,
+  disableIndicatorLoading,
+  addTimebox,
+  replaceTimebox,
+  removeTimebox,
+  startEditingTimebox,
+  stopEditingTimebox,
+} from "./actions";
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
@@ -22,39 +32,16 @@ const TimeboxesManager = React.memo((accessToken) => {
 
   useEffect(() => {
     TimeboxesAPI.getAllTimeboxes(accessToken)
-      .then((timeboxes) => dispatch({ type: "TIMEBOXES_SET", timeboxes }))
-      .catch((error) => dispatch({ type: "ERROR_SET", error }))
-      .finally(() => dispatch({ type: "LOADING_INDICATOR_DISABLE" }));
+      .then((timeboxes) => dispatch(setTimeboxes(timeboxes)))
+      .catch((error) => dispatch(setError(error)))
+      .finally(() => dispatch(disableIndicatorLoading()));
   }, [accessToken]);
-
-  const addTimebox = (timebox) => {
-    TimeboxesAPI.addTimebox(timebox).then((addedTimebox) =>
-      dispatch({ type: "TIMEBOX_ADD", timebox: addedTimebox })
-    );
-  };
-  const removeTimebox = (timeboxToRemove) => {
-    TimeboxesAPI.removeTimebox(timeboxToRemove).then(() => {
-      dispatch({
-        type: "TIMEBOX_REMOVE",
-        removedTimebox: timeboxToRemove,
-      });
-    });
-  };
-  const updateTimebox = (timeBoxToUpdate) => {
-    TimeboxesAPI.partiallyUpdateTimebox(timeBoxToUpdate).then(
-      (replacedTimebox) => {
-        dispatch({
-          type: "TIMEBOX_REPLACE",
-          replacedTimebox,
-        });
-        dispatch({ type: "TIMEBOX_EDIT_STOP" });
-      }
-    );
-  };
 
   const handleCreate = useCallback((createdTimebox) => {
     try {
-      addTimebox(createdTimebox);
+      TimeboxesAPI.addTimebox(createdTimebox).then((addedTimebox) =>
+        dispatch(addTimebox(addedTimebox))
+      );
     } catch (error) {
       console.log("Jest błąd przy tworzeniu timeboksa:", error);
     }
@@ -71,12 +58,16 @@ const TimeboxesManager = React.memo((accessToken) => {
         key={timebox.id}
         initialTitle={timebox.title}
         initialTotalTimeInMinutes={timebox.totalTimeInMinutes}
-        onCancel={() => dispatch({ type: "TIMEBOX_EDIT_STOP" })}
+        onCancel={() => dispatch(stopEditingTimebox())}
         onUpdate={(updatedTimebox) => {
-          updateTimebox({
-            ...timebox,
-            ...updatedTimebox,
-          });
+          const timeBoxToUpdate = { ...timebox, ...updatedTimebox };
+          console.log(timeBoxToUpdate);
+          TimeboxesAPI.partiallyUpdateTimebox(timeBoxToUpdate).then(
+            (replacedTimebox) => {
+              dispatch(replaceTimebox(replacedTimebox));
+              dispatch(stopEditingTimebox());
+            }
+          );
         }}
       />
     ) : (
@@ -84,12 +75,13 @@ const TimeboxesManager = React.memo((accessToken) => {
         key={timebox.id}
         title={timebox.title}
         totalTimeInMinutes={timebox.totalTimeInMinutes}
-        onDelete={() => removeTimebox(timebox)}
+        onDelete={() =>
+          TimeboxesAPI.removeTimebox(timebox).then(() => {
+            dispatch(removeTimebox(timebox));
+          })
+        }
         onEdit={() => {
-          dispatch({
-            type: "TIMEBOX_EDIT_START",
-            currentlyEditedTimeboxId: timebox.id,
-          });
+          dispatch(startEditingTimebox(timebox.id));
         }}
       />
     );
