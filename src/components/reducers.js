@@ -41,16 +41,31 @@ export const timeboxesReducer = (
       return { ...state, currentlyEditedTimeboxId };
     }
     case "LOADING_INDICATOR_DISABLE": {
-      return { ...state, loading: false };
+      return { ...state, timeboxesAreLoading: false };
     }
     case "ERROR_SET": {
       const { error } = action;
-      return { ...state, error };
+      return { ...state, timeboxesLoadingError: error };
     }
     default:
       return state;
   }
 };
+
+// TimeboxesManager selectors
+
+export const getAllTimeboxes = (state) => state.timeboxes;
+export const areTimeboxesLoading = (state) => state.timeboxesAreLoading;
+export const getTimeboxesLoadingError = (state) => state.timeboxesLoadingError;
+export const isTimeboxEdited = (state, timebox) =>
+  state.currentlyEditedTimeboxId &&
+  state.currentlyEditedTimeboxId === timebox.id;
+export const getTimeboxById = (state, timeboxId) =>
+  state.timeboxes.find((timebox) => timebox.id === timeboxId);
+export const getCurrentlyEditedTimebox = (state) =>
+  getTimeboxById(state, state.currentlyEditedTimeboxId);
+export const isAnyTimeboxEdited = (state) => !!state.currentlyEditedTimeboxId;
+
 const timeboxInitialState = {
   isRunning: false,
   isPaused: false,

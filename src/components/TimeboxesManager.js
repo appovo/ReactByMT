@@ -5,7 +5,15 @@ import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { TimeboxesList } from "./TimeboxesList";
 import Timebox from "./Timebox";
 import TimeboxEditor from "./TimeboxEditor";
-import { timeboxesReducer } from "./reducers";
+import {
+  timeboxesReducer,
+  getAllTimeboxes,
+  areTimeboxesLoading,
+  getTimeboxesLoadingError,
+  isTimeboxEdited,
+  getCurrentlyEditedTimebox,
+  isAnyTimeboxEdited,
+} from "./reducers";
 import {
   setTimeboxes,
   setError,
@@ -53,7 +61,7 @@ const TimeboxesManager = React.memo((accessToken) => {
     );
   };
   const renderTimebox = (timebox) => {
-    return state.currentlyEditedTimeboxId === timebox.id ? (
+    return isTimeboxEdited(state, timebox) ? (
       <TimeboxEditor
         key={timebox.id}
         initialTitle={timebox.title}
@@ -89,13 +97,19 @@ const TimeboxesManager = React.memo((accessToken) => {
 
   return (
     <>
+      {isAnyTimeboxEdited(state)
+        ? `You're editing timebox of id: ${getCurrentlyEditedTimebox(state).id}`
+        : ""}
       <TimeboxCreatorMemo onCreate={handleCreate} />
-      {state.loading ? "Timeboxy się ładują..." : ""}
-      {state.error ? "Nie udało się załadować :(" : ""}
+      {areTimeboxesLoading(state) ? "Timeboxy się ładują..." : ""}
+      {getTimeboxesLoadingError(state) ? "Nie udało się załadować :(" : ""}
       <Error message="Coś się wykrzaczyło w liście:(">
         <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
         <input id="tmbx_filter" onChange={handleInputChange} />
-        <TimeboxesListMemo timeboxes={state.timeboxes} render={renderTimebox} />
+        <TimeboxesListMemo
+          timeboxes={getAllTimeboxes(state)}
+          render={renderTimebox}
+        />
       </Error>
     </>
   );
