@@ -1,3 +1,4 @@
+// TimeboxManager
 export const setTimeboxes = (timeboxes) => ({
   type: "TIMEBOXES_SET",
   timeboxes,
@@ -23,3 +24,15 @@ export const startEditingTimebox = (currentlyEditedTimeboxId) => ({
   currentlyEditedTimeboxId: currentlyEditedTimeboxId,
 });
 export const stopEditingTimebox = () => ({ type: "TIMEBOX_EDIT_STOP" });
+
+// CurrentTimebox
+export const startRunning = () => ({ type: "RUNNING_START" });
+export const stopRunning = () => ({ type: "RUNNING_STOP" });
+export const unPause = () => ({ type: "UNPAUSE" });
+export const clearPausesCount = () => ({ type: "PAUSES_COUNT_CLEAR" });
+export const clearElapsedSeconds = () => ({ type: "ELAPSED_SECONDS_CLEAR" });
+export const timerStart = () => ({ type: "TIMER_START" });
+export const setIntervalId = (id) => ({ type: "INTERVAL_ID_SET", id });
+export const clearIntervalId = () => ({ type: "INTERVAL_ID_CLEAR" });
+export const incrementPausesCount = () => ({ type: "PAUSES_COUNT_INCREMENT" });
+export const togglePauseAction = () => ({ type: "TOGGLE_PAUSE" });

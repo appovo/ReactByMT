@@ -3,6 +3,18 @@ import Clock from "./Clock";
 import ProgressBar from "./ProgressBar";
 import { getMinutesAndSecondsFromDurationInSeconds } from "../lib/time";
 import { timeboxReducer } from "./reducers";
+import {
+  startRunning,
+  stopRunning,
+  unPause,
+  clearPausesCount,
+  clearElapsedSeconds,
+  timerStart,
+  setIntervalId,
+  clearIntervalId,
+  incrementPausesCount,
+  togglePauseAction,
+} from "./actions";
 
 function CurrentTimebox({ title, totalTimeInMinutes }) {
   const [state, dispatch] = useReducer(
@@ -12,45 +24,41 @@ function CurrentTimebox({ title, totalTimeInMinutes }) {
   );
 
   const handleStart = () => {
-    dispatch({ type: "RUNNING_START" });
+    dispatch(startRunning());
     startTimer();
   };
 
   const handleStop = () => {
-    dispatch({ type: "RUNNING_STOP" });
-    dispatch({ type: "UNPAUSE" });
-    dispatch({ type: "PAUSES_COUNT_CLEAR" });
-    dispatch({ type: "ELAPSED_SECONDS_CLEAR" });
+    dispatch(stopRunning());
+    dispatch(unPause());
+    dispatch(clearPausesCount());
+    dispatch(clearElapsedSeconds());
     stopTimer();
   };
 
   const startTimer = () => {
     if (state.intervalId === null) {
       const id = window.setInterval(() => {
-        dispatch({
-          type: "TIMER_START",
-        });
+        dispatch(timerStart());
       }, 100);
-      dispatch({ type: "INTERVAL_ID_SET", id });
+      dispatch(setIntervalId(id));
     }
   };
 
   const stopTimer = () => {
     window.clearInterval(state.intervalId);
-    dispatch({ type: "INTERVAL_ID_CLEAR" });
+    dispatch(clearIntervalId());
   };
 
   const togglePause = () => {
     const currentlyPaused = !state.isPaused;
-    dispatch({
-      type: "PAUSES_COUNT_INCREMENT",
-    });
+    dispatch(incrementPausesCount());
     if (currentlyPaused) {
       stopTimer();
     } else {
       startTimer();
     }
-    dispatch({ type: "TOGGLE_PAUSE" });
+    dispatch(togglePauseAction());
   };
 
   const totalTimeInSeconds = totalTimeInMinutes * 60;
