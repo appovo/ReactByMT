@@ -53,7 +53,6 @@ export const timeboxesReducer = (
 };
 
 // TimeboxesManager selectors
-
 export const getAllTimeboxes = (state) => state.timeboxes;
 export const areTimeboxesLoading = (state) => state.timeboxesAreLoading;
 export const getTimeboxesLoadingError = (state) => state.timeboxesLoadingError;
@@ -112,3 +111,11 @@ export const timeboxReducer = (state = timeboxInitialState, action = {}) => {
       return state;
   }
 };
+
+// CurentTimebox selectors
+
+export const getIntervalId = (state) => state.intervalId;
+export const isClockPaused = (state) => state.isPaused;
+export const getElapsedTimeInseconds = (state) => state.elapsedTimeInSeconds;
+export const isClockRunning = (state) => state.isRunning;
+export const getPausesCount = (state) => state.pausesCount;
