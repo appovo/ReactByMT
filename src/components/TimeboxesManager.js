@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useReducer } from "react";
+import React, { useEffect, useCallback, useReducer, useState } from "react";
 import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
@@ -25,22 +25,42 @@ import {
   stopEditingTimebox,
 } from "./actions";
 
+import { createStore } from "redux";
+
+const store = createStore(timeboxesReducer);
+
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
 });
 const TimeboxCreatorMemo = React.memo(TimeboxCreator);
 const TimeboxesListMemo = React.memo(TimeboxesList);
 
+function useForceUpdate() {
+  const [updateCounter, setUpdateCounter] = useState(0);
+  function forceUpdate() {
+    setUpdateCounter((prevCounter) => prevCounter + 1);
+  }
+
+  return forceUpdate;
+}
+
 const TimeboxesManager = React.memo((accessToken) => {
-  const [state, dispatch] = useReducer(
-    timeboxesReducer,
-    undefined,
-    timeboxesReducer
-  );
+  const state = store.getState();
+  const dispatch = store.dispatch;
+  const forceUpdate = useForceUpdate();
+  useEffect(() => store.subscribe(forceUpdate), []);
+
+  // const [state, dispatch] = useReducer(
+  //   timeboxesReducer,
+  //   undefined,
+  //   timeboxesReducer
+  // );
 
   useEffect(() => {
     TimeboxesAPI.getAllTimeboxes(accessToken)
-      .then((timeboxes) => dispatch(setTimeboxes(timeboxes)))
+      .then((timeboxes) => {
+        dispatch(setTimeboxes(timeboxes));
+      })
       .catch((error) => dispatch(setError(error)))
       .finally(() => dispatch(disableIndicatorLoading()));
   }, [accessToken]);
