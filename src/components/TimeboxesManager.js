@@ -25,9 +25,11 @@ import {
   stopEditingTimebox,
 } from "./actions";
 
-import { createStore } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
 
-const store = createStore(timeboxesReducer);
+const store = configureStore({
+  reducer: timeboxesReducer,
+});
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
