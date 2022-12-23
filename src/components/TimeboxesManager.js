@@ -1,4 +1,5 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback } from "react";
+import { useStore } from "react-redux";
 import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
@@ -24,7 +25,6 @@ import {
   stopEditingTimebox,
 } from "./actions";
 import { useForceUpdate } from "./hooks";
-import { store } from "./store";
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
@@ -33,8 +33,8 @@ const TimeboxCreatorMemo = React.memo(TimeboxCreator);
 const TimeboxesListMemo = React.memo(TimeboxesList);
 
 const TimeboxesManager = React.memo((accessToken) => {
+  const store = useStore();
   const state = store.getState().timeboxesReducer;
-  console.log(state);
   const dispatch = store.dispatch;
   const forceUpdate = useForceUpdate();
   // eslint-disable-next-line

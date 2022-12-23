@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useStore } from "react-redux";
 import Clock from "./Clock";
 import ProgressBar from "./ProgressBar";
 import { getMinutesAndSecondsFromDurationInSeconds } from "../lib/time";
@@ -22,9 +23,9 @@ import {
   togglePauseAction,
 } from "./actions";
 import { useForceUpdate } from "./hooks";
-import { store } from "./store";
 
 function CurrentTimebox({ title, totalTimeInMinutes }) {
+  const store = useStore();
   const state = store.getState().timeboxReducer;
   const dispatch = store.dispatch;
   const forceUpdate = useForceUpdate();
