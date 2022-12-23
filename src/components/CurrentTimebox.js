@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useState, useEffect } from "react";
 import Clock from "./Clock";
 import ProgressBar from "./ProgressBar";
 import { getMinutesAndSecondsFromDurationInSeconds } from "../lib/time";
@@ -8,8 +8,7 @@ import {
   getElapsedTimeInseconds,
   isClockRunning,
   getPausesCount,
-  timeboxReducer,
-} from "./reducers";
+} from "./selectors";
 import {
   startRunning,
   stopRunning,
@@ -22,13 +21,15 @@ import {
   incrementPausesCount,
   togglePauseAction,
 } from "./actions";
+import { useForceUpdate } from "./hooks";
+import { store } from "./store";
 
 function CurrentTimebox({ title, totalTimeInMinutes }) {
-  const [state, dispatch] = useReducer(
-    timeboxReducer,
-    undefined,
-    timeboxReducer
-  );
+  const state = store.getState().timeboxReducer;
+  const dispatch = store.dispatch;
+  const forceUpdate = useForceUpdate();
+  // eslint-disable-next-line
+  useEffect(() => store.subscribe(forceUpdate), []);
 
   const handleStart = () => {
     dispatch(startRunning());

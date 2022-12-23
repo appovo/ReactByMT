@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useReducer, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
@@ -6,14 +6,13 @@ import { TimeboxesList } from "./TimeboxesList";
 import Timebox from "./Timebox";
 import TimeboxEditor from "./TimeboxEditor";
 import {
-  timeboxesReducer,
   getAllTimeboxes,
   areTimeboxesLoading,
   getTimeboxesLoadingError,
   isTimeboxEdited,
   getCurrentlyEditedTimebox,
   isAnyTimeboxEdited,
-} from "./reducers";
+} from "./selectors";
 import {
   setTimeboxes,
   setError,
@@ -24,12 +23,8 @@ import {
   startEditingTimebox,
   stopEditingTimebox,
 } from "./actions";
-
-import { configureStore } from "@reduxjs/toolkit";
-
-const store = configureStore({
-  reducer: timeboxesReducer,
-});
+import { useForceUpdate } from "./hooks";
+import { store } from "./store";
 
 const TimeboxesAPI = createTimeboxesAPI({
   baseUrl: "http://localhost:5000/timeboxes",
@@ -37,26 +32,13 @@ const TimeboxesAPI = createTimeboxesAPI({
 const TimeboxCreatorMemo = React.memo(TimeboxCreator);
 const TimeboxesListMemo = React.memo(TimeboxesList);
 
-function useForceUpdate() {
-  const [updateCounter, setUpdateCounter] = useState(0);
-  function forceUpdate() {
-    setUpdateCounter((prevCounter) => prevCounter + 1);
-  }
-
-  return forceUpdate;
-}
-
 const TimeboxesManager = React.memo((accessToken) => {
-  const state = store.getState();
+  const state = store.getState().timeboxesReducer;
+  console.log(state);
   const dispatch = store.dispatch;
   const forceUpdate = useForceUpdate();
+  // eslint-disable-next-line
   useEffect(() => store.subscribe(forceUpdate), []);
-
-  // const [state, dispatch] = useReducer(
-  //   timeboxesReducer,
-  //   undefined,
-  //   timeboxesReducer
-  // );
 
   useEffect(() => {
     TimeboxesAPI.getAllTimeboxes(accessToken)
@@ -65,6 +47,7 @@ const TimeboxesManager = React.memo((accessToken) => {
       })
       .catch((error) => dispatch(setError(error)))
       .finally(() => dispatch(disableIndicatorLoading()));
+    // eslint-disable-next-line
   }, [accessToken]);
 
   const handleCreate = useCallback((createdTimebox) => {
@@ -75,6 +58,7 @@ const TimeboxesManager = React.memo((accessToken) => {
     } catch (error) {
       console.log("Jest błąd przy tworzeniu timeboksa:", error);
     }
+    // eslint-disable-next-line
   }, []);
 
   const handleInputChange = (target) => {
