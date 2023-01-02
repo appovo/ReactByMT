@@ -11,6 +11,9 @@ function createTimeboxesAPI({ baseUrl }) {
       return timeboxes;
     },
     addTimebox: async function (timeboxToAdd) {
+      if (!timeboxToAdd.totalTimeInMinutes) {
+        throw new Error("Total time must be > 0");
+      }
       const response = await axios.post(baseUrl, timeboxToAdd);
       const addedTimebox = response.data;
       return addedTimebox;

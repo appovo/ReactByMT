@@ -8,7 +8,6 @@ import { useContext } from "react";
 
 export default function AuthenticatedApp({ onLogout }) {
   const { accessToken } = useContext(AuthenticationContext);
-
   const renderQuote = (text, author) => {
     return (
       <figure>
