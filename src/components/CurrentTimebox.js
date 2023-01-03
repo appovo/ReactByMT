@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import { useStore } from "react-redux";
-import Clock from "./Clock";
-import ProgressBar from "./ProgressBar";
 import { getMinutesAndSecondsFromDurationInSeconds } from "../lib/time";
 import {
   getIntervalId,
@@ -23,6 +21,8 @@ import {
   togglePauseAction,
 } from "./actions";
 import { useForceUpdate } from "./hooks";
+import { CurrentTimeboxTimeLeft } from "./CurrentTimeboxTimeLeft";
+import { CurrentTimeboxProgressBar } from "./CurrentTimeboxProgressBar";
 
 function CurrentTimebox({ title, totalTimeInMinutes }) {
   const store = useStore();
@@ -80,18 +80,12 @@ function CurrentTimebox({ title, totalTimeInMinutes }) {
     (getElapsedTimeInseconds(state) / totalTimeInSeconds) * 100.0;
   return (
     <div className={`CurrentTimebox`}>
+      <CurrentTimeboxTimeLeft
+        minutesLeft={minutesLeft}
+        secondsLeft={secondsLeft}
+      />
       <h1>{title}</h1>
-      <Clock
-        minutes={minutesLeft}
-        seconds={secondsLeft}
-        className={isClockPaused(state) ? "inactive" : ""}
-      />
-      <ProgressBar
-        percent={progressInPercent}
-        className={isClockPaused(state) ? "inactive" : ""}
-        color="red"
-        big
-      />
+      <CurrentTimeboxProgressBar progressInPercent={progressInPercent} />
       <button onClick={handleStart} disabled={isClockRunning(state)}>
         Start
       </button>
