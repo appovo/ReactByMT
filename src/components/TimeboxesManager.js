@@ -1,15 +1,10 @@
 import React, { useEffect, useCallback } from "react";
-import { useStore } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { AllTimeboxesList } from "./TimeboxesList";
-import {
-  areTimeboxesLoading,
-  getTimeboxesLoadingError,
-  getCurrentlyEditedTimebox,
-  isAnyTimeboxEdited,
-} from "./selectors";
+import { areTimeboxesLoading, getTimeboxesLoadingError } from "./selectors";
 import {
   setTimeboxes,
   setError,
@@ -19,7 +14,6 @@ import {
   removeTimebox,
   stopEditingTimebox,
 } from "./actions";
-import { useForceUpdate } from "./hooks";
 import { EditableTimebox } from "./EditableTimebox";
 
 const TimeboxesAPI = createTimeboxesAPI({
@@ -28,13 +22,9 @@ const TimeboxesAPI = createTimeboxesAPI({
 const TimeboxCreatorMemo = React.memo(TimeboxCreator);
 
 const TimeboxesManager = React.memo((accessToken) => {
-  const store = useStore();
-  const state = store.getState().timeboxesReducer;
-  // console.log(store.getState());
-  const dispatch = store.dispatch;
-  const forceUpdate = useForceUpdate();
-  // eslint-disable-next-line
-  useEffect(() => store.subscribe(forceUpdate), []);
+  const dispatch = useDispatch();
+  const timeboxesLoading = useSelector(areTimeboxesLoading);
+  const timeboxesLoadingError = useSelector(getTimeboxesLoadingError);
 
   useEffect(() => {
     TimeboxesAPI.getAllTimeboxes(accessToken)
@@ -90,12 +80,9 @@ const TimeboxesManager = React.memo((accessToken) => {
 
   return (
     <>
-      {isAnyTimeboxEdited(state)
-        ? `You're editing timebox of id: ${getCurrentlyEditedTimebox(state).id}`
-        : ""}
       <TimeboxCreatorMemo onCreate={handleCreate} />
-      {areTimeboxesLoading(state) ? "Timeboxy się ładują..." : ""}
-      {getTimeboxesLoadingError(state) ? "Nie udało się załadować :(" : ""}
+      {timeboxesLoading ? "Timeboxy się ładują..." : ""}
+      {timeboxesLoadingError ? "Nie udało się załadować :(" : ""}
       <Error message="Coś się wykrzaczyło w liście:(">
         <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
         <input id="tmbx_filter" onChange={handleInputChange} />
