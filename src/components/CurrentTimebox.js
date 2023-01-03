@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
-import { useStore } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getMinutesAndSecondsFromDurationInSeconds } from "../lib/time";
 import {
   getIntervalId,
   isClockPaused,
-  getElapsedTimeInseconds,
+  getElapsedTimeInSeconds,
   isClockRunning,
   getPausesCount,
 } from "./selectors";
@@ -20,17 +19,24 @@ import {
   incrementPausesCount,
   togglePauseAction,
 } from "./actions";
-import { useForceUpdate } from "./hooks";
 import { CurrentTimeboxTimeLeft } from "./CurrentTimeboxTimeLeft";
 import { CurrentTimeboxProgressBar } from "./CurrentTimeboxProgressBar";
 
 function CurrentTimebox({ title, totalTimeInMinutes }) {
-  const store = useStore();
-  const state = store.getState().timeboxReducer;
-  const dispatch = store.dispatch;
-  const forceUpdate = useForceUpdate();
-  // eslint-disable-next-line
-  useEffect(() => store.subscribe(forceUpdate), []);
+  const dispatch = useDispatch();
+  const intervalId = useSelector((state) =>
+    getIntervalId(state.timeboxReducer)
+  );
+  const isPaused = useSelector((state) => isClockPaused(state.timeboxReducer));
+  const elapsedTimeInSeconds = useSelector((state) =>
+    getElapsedTimeInSeconds(state.timeboxReducer)
+  );
+  const isRunning = useSelector((state) =>
+    isClockRunning(state.timeboxReducer)
+  );
+  const pausesCount = useSelector((state) =>
+    getPausesCount(state.timeboxReducer)
+  );
 
   const handleStart = () => {
     dispatch(startRunning());
@@ -46,7 +52,7 @@ function CurrentTimebox({ title, totalTimeInMinutes }) {
   };
 
   const startTimer = () => {
-    if (state.intervalId === null) {
+    if (intervalId === null) {
       const id = window.setInterval(() => {
         dispatch(timerStart());
       }, 100);
@@ -55,12 +61,12 @@ function CurrentTimebox({ title, totalTimeInMinutes }) {
   };
 
   const stopTimer = () => {
-    window.clearInterval(getIntervalId(state));
+    window.clearInterval(intervalId);
     dispatch(clearIntervalId());
   };
 
   const togglePause = () => {
-    const currentlyPaused = !isClockPaused(state);
+    const currentlyPaused = !isPaused;
     dispatch(incrementPausesCount());
     if (currentlyPaused) {
       stopTimer();
@@ -71,13 +77,12 @@ function CurrentTimebox({ title, totalTimeInMinutes }) {
   };
 
   const totalTimeInSeconds = totalTimeInMinutes * 60;
-  const timeLeftInSeconds = totalTimeInSeconds - getElapsedTimeInseconds(state);
+  const timeLeftInSeconds = totalTimeInSeconds - elapsedTimeInSeconds;
 
   const [minutesLeft, secondsLeft] =
     getMinutesAndSecondsFromDurationInSeconds(timeLeftInSeconds);
 
-  const progressInPercent =
-    (getElapsedTimeInseconds(state) / totalTimeInSeconds) * 100.0;
+  const progressInPercent = (elapsedTimeInSeconds / totalTimeInSeconds) * 100.0;
   return (
     <div className={`CurrentTimebox`}>
       <CurrentTimeboxTimeLeft
@@ -86,16 +91,16 @@ function CurrentTimebox({ title, totalTimeInMinutes }) {
       />
       <h1>{title}</h1>
       <CurrentTimeboxProgressBar progressInPercent={progressInPercent} />
-      <button onClick={handleStart} disabled={isClockRunning(state)}>
+      <button onClick={handleStart} disabled={isRunning}>
         Start
       </button>
-      <button onClick={handleStop} disabled={!isClockRunning(state)}>
+      <button onClick={handleStop} disabled={!isRunning}>
         Stop
       </button>
-      <button onClick={togglePause} disabled={!isClockRunning(state)}>
-        {isClockPaused(state) ? "Wznów" : "Pauzuj"}
+      <button onClick={togglePause} disabled={!isRunning}>
+        {isPaused ? "Wznów" : "Pauzuj"}
       </button>
-      Liczba przerw: {getPausesCount(state)}
+      Liczba przerw: {pausesCount}
     </div>
   );
 }

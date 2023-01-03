@@ -56,7 +56,6 @@ const TimeboxesManager = React.memo((accessToken) => {
   const renderTimebox = (timebox) => {
     const onUpdate = (updatedTimebox) => {
       const timeBoxToUpdate = { ...timebox, ...updatedTimebox };
-      console.log(timeBoxToUpdate);
       TimeboxesAPI.partiallyUpdateTimebox(timeBoxToUpdate).then(
         (replacedTimebox) => {
           dispatch(replaceTimebox(replacedTimebox));

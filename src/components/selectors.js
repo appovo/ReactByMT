@@ -14,6 +14,6 @@ export const isAnyTimeboxEdited = (state) => !!state.currentlyEditedTimeboxId;
 // CurentTimebox selectors
 export const getIntervalId = (state) => state.intervalId;
 export const isClockPaused = (state) => state.isPaused;
-export const getElapsedTimeInseconds = (state) => state.elapsedTimeInSeconds;
+export const getElapsedTimeInSeconds = (state) => state.elapsedTimeInSeconds;
 export const isClockRunning = (state) => state.isRunning;
 export const getPausesCount = (state) => state.pausesCount;
