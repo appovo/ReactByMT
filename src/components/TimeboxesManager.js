@@ -6,12 +6,10 @@ import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { AllTimeboxesList } from "./TimeboxesList";
 import { areTimeboxesLoading, getTimeboxesLoadingError } from "./selectors";
 import {
-  setTimeboxes,
-  setError,
-  disableIndicatorLoading,
+  fetchAllTimeboxes,
   addTimebox,
   replaceTimebox,
-  removeTimebox,
+  removeTimeboxRemotely,
   stopEditingTimebox,
 } from "./actions";
 import { EditableTimebox } from "./EditableTimebox";
@@ -27,14 +25,9 @@ const TimeboxesManager = React.memo((accessToken) => {
   const timeboxesLoadingError = useSelector(getTimeboxesLoadingError);
 
   useEffect(() => {
-    TimeboxesAPI.getAllTimeboxes(accessToken)
-      .then((timeboxes) => {
-        dispatch(setTimeboxes(timeboxes));
-      })
-      .catch((error) => dispatch(setError(error)))
-      .finally(() => dispatch(disableIndicatorLoading()));
-    // eslint-disable-next-line
-  }, [accessToken]);
+    dispatch(fetchAllTimeboxes(accessToken));
+    //eslint-disable-next-line
+  }, []);
 
   const handleCreate = useCallback((createdTimebox) => {
     try {
@@ -63,10 +56,7 @@ const TimeboxesManager = React.memo((accessToken) => {
         }
       );
     };
-    const onDelete = () =>
-      TimeboxesAPI.removeTimebox(timebox).then(() => {
-        dispatch(removeTimebox(timebox));
-      });
+    const onDelete = () => dispatch(removeTimeboxRemotely(timebox));
 
     return (
       <EditableTimebox

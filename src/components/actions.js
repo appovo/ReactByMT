@@ -1,3 +1,5 @@
+import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
+
 // TimeboxManager
 export const setTimeboxes = (timeboxes) => ({
   type: "TIMEBOXES_SET",
@@ -24,6 +26,24 @@ export const startEditingTimebox = (currentlyEditedTimeboxId) => ({
   currentlyEditedTimeboxId: currentlyEditedTimeboxId,
 });
 export const stopEditingTimebox = () => ({ type: "TIMEBOX_EDIT_STOP" });
+
+const TimeboxesAPI = createTimeboxesAPI({
+  baseUrl: "http://localhost:5000/timeboxes",
+});
+
+export const fetchAllTimeboxes = (accessToken) => (dispatch) => {
+  TimeboxesAPI.getAllTimeboxes(accessToken)
+    .then((timeboxes) => {
+      dispatch(setTimeboxes(timeboxes));
+    })
+    .catch((error) => dispatch(setError(error)))
+    .finally(() => dispatch(disableIndicatorLoading()));
+};
+export const removeTimeboxRemotely = (timebox) => (dispatch) => {
+  TimeboxesAPI.removeTimebox(timebox).then(() => {
+    dispatch(removeTimebox(timebox));
+  });
+};
 
 // CurrentTimebox
 export const startRunning = () => ({ type: "RUNNING_START" });
