@@ -4,14 +4,14 @@ import TimeboxCreator from "./TimeboxCreator";
 import Error from "./ErrorBoundary";
 import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
 import { AllTimeboxesList } from "./TimeboxesList";
-import { areTimeboxesLoading, getTimeboxesLoadingError } from "./selectors";
+import { areTimeboxesLoading, getTimeboxesLoadingError } from "../selectors";
 import {
   fetchAllTimeboxes,
   addTimebox,
   replaceTimebox,
   removeTimeboxRemotely,
   stopEditingTimebox,
-} from "./actions";
+} from "../actions";
 import { EditableTimebox } from "./EditableTimebox";
 
 const TimeboxesAPI = createTimeboxesAPI({

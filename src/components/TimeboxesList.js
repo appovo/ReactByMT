@@ -1,4 +1,4 @@
-import { getAllTimeboxes } from "./selectors";
+import { getAllTimeboxes } from "../selectors";
 import { connect } from "react-redux";
 
 export function TimeboxesList({ timeboxes, render }) {

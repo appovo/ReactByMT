@@ -6,7 +6,7 @@ import {
   getElapsedTimeInSeconds,
   isClockRunning,
   getPausesCount,
-} from "./selectors";
+} from "../selectors";
 import {
   startRunning,
   stopRunning,
@@ -18,7 +18,7 @@ import {
   clearIntervalId,
   incrementPausesCount,
   togglePauseAction,
-} from "./actions";
+} from "../actions";
 import { CurrentTimeboxTimeLeft } from "./CurrentTimeboxTimeLeft";
 import { CurrentTimeboxProgressBar } from "./CurrentTimeboxProgressBar";
 

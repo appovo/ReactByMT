@@ -1,4 +1,4 @@
-import createTimeboxesAPI from "../api/AxiosTimeboxesApi";
+import createTimeboxesAPI from "./api/AxiosTimeboxesApi";
 
 // TimeboxManager
 export const setTimeboxes = (timeboxes) => ({

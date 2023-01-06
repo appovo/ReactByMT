@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import Clock from "./Clock";
-import { isClockPaused } from "./selectors";
+import { isClockPaused } from "../selectors";
 
 const mapStateToProps = (state) => ({
   isPaused: isClockPaused(state.timeboxReducer),
