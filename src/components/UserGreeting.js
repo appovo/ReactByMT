@@ -4,7 +4,7 @@ import { useContext } from "react";
 
 function UserGreeting() {
   const { accessToken } = useContext(AuthenticationContext);
-  return <>Witaj, {getUserEmail(accessToken)}</>;
+  return <>Welcome, {getUserEmail(accessToken)}</>;
 }
 
 export default UserGreeting;

@@ -17,16 +17,16 @@ const TimeboxCreator = ({ onCreate }) => {
   return (
     <form onSubmit={handleSubmit} className="TimeboxCreator">
       <label>
-        Co robisz?
+        Activity:
         <input ref={titleInput} type="text" />
       </label>
       <br />
       <label>
-        Ile minut?
+        Time:
         <input ref={totalTimeInMinutesInput} type="number" />
       </label>
       <br />
-      <button>Dodaj timebox</button>
+      <button>Add timebox</button>
     </form>
   );
 };

@@ -35,7 +35,7 @@ const TimeboxesManager = React.memo((accessToken) => {
         dispatch(addTimebox(addedTimebox))
       );
     } catch (error) {
-      console.log("Jest błąd przy tworzeniu timeboksa:", error);
+      console.log("Error while creating timebox:", error);
     }
     // eslint-disable-next-line
   }, []);
@@ -70,10 +70,10 @@ const TimeboxesManager = React.memo((accessToken) => {
   return (
     <>
       <TimeboxCreatorMemo onCreate={handleCreate} />
-      {timeboxesLoading ? "Timeboxy się ładują..." : ""}
-      {timeboxesLoadingError ? "Nie udało się załadować :(" : ""}
-      <Error message="Coś się wykrzaczyło w liście:(">
-        <label htmlFor="tmbx_filter">Filtruj timeboksy: </label>
+      {timeboxesLoading ? "Timeboxes are loading..." : ""}
+      {timeboxesLoadingError ? "Failed to load :(" : ""}
+      <Error message="Something's wrong with the list:(">
+        <label htmlFor="tmbx_filter">Filter timeboxes: </label>
         <input id="tmbx_filter" onChange={handleInputChange} />
         <AllTimeboxesList render={renderTimebox} />
       </Error>

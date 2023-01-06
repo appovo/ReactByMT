@@ -40,7 +40,7 @@ function App() {
 
   return (
     <div className="App" id="app">
-      <ErrorBoundary message="Coś nie działa w całej appce :(">
+      <ErrorBoundary message="Something's wrong in the whole app :(">
         {isUserLoggedIn() ? (
           <>
             <AuthenticationContext.Provider
@@ -54,7 +54,7 @@ function App() {
         ) : (
           <LoginForm
             errorMessage={
-              previousLoginAttemptFailed ? "Nie udało sie zalogować" : null
+              previousLoginAttemptFailed ? "Failed to log in" : null
             }
             onLoginAttempt={handleLoginAttempt}
           />

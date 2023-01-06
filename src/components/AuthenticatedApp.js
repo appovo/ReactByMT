@@ -35,11 +35,11 @@ export default function AuthenticatedApp({ onLogout }) {
       <Header>
         <UserGreeting />
         <a href="/#" className="header__logout-link" onClick={onLogout}>
-          Wyloguj
+          Logout
         </a>
       </Header>
       <TimeboxesManager accessToken={accessToken} />
-      <CurrentTimebox title="Używam useState" totalTimeInMinutes={3} />
+      <CurrentTimebox title="Learning useState" totalTimeInMinutes={3} />
       <InspirationalQuote
         render={Math.random() < 0.5 ? renderQuote : renderQuoteBold}
       />

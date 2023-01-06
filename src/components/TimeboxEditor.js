@@ -29,12 +29,12 @@ const TimeboxEditor = ({
   return (
     <form onSubmit={handleSubmit} className="TimeboxEditor">
       <label>
-        Co robisz?
+        Activity:
         <input ref={titleInput} defaultValue={initialTitle} type="text" />
       </label>
       <br />
       <label>
-        Ile minut?
+        Time:
         <input
           ref={totalTimeInMinutesInput}
           defaultValue={initialTotalTimeInMinutes}
@@ -42,8 +42,8 @@ const TimeboxEditor = ({
         />
       </label>
       <br />
-      <button onClick={onCancel}>Anuluj</button>
-      <button onClick={onUpdate}>Zapisz zmiany</button>
+      <button onClick={onCancel}>Cancel</button>
+      <button onClick={onUpdate}>Save</button>
     </form>
   );
 };
